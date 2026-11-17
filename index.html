@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Maa Gitanjali Digital Studio - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0284c7;
+      --dark-blue: #0f172a;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 165px;
+    }
+
+    /* Particle Background Canvas */
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main App Container */
+    .app-container {
+      position: relative;
+      z-index: 10;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Top Dashboard Header */
+    .dash-header {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 14px 16px;
+      box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.12);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      flex-shrink: 0;
+    }
+
+    .brand-info h1 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--dark-blue);
+    }
+
+    .brand-info p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 1px;
+    }
+
+    /* Stacked Navigation Cards (Up-Down) */
+    .stack-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .nav-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 14px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      transition: transform 0.15s ease;
+    }
+
+    .nav-card:active {
+      transform: scale(0.98);
+    }
+
+    .nav-card-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .icon-web { background: #e0f2fe; color: #0284c7; }
+    .icon-insta { background: #fce7f3; color: #db2777; }
+
+    .nav-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+
+    .nav-subtitle {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-arrow {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* Left-to-Right Horizontal Review Slider Section */
+    .slider-header {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--dark-blue);
+      margin-bottom: 6px;
+      padding-left: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .horizontal-slider {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 2px 14px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .horizontal-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .review-card {
+      scroll-snap-align: start;
+      flex: 0 0 82%;
+      max-width: 320px;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .review-card:active {
+      transform: scale(0.98);
+    }
+
+    .review-card.selected {
+      border-color: var(--primary-blue);
+      background: #f0fdf4;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.2);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .rev-num {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .review-text {
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* Fixed Bottom Action Dock */
+    .bottom-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(203, 213, 225, 0.7);
+      padding: 12px 16px 18px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+      z-index: 100;
+    }
+
+    .dock-inner {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .dock-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .star-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .star-pill {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .star-pill.active {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      color: #b45309;
+    }
+
+    .edit-trigger {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .action-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-google {
+      background: #1a73e8;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(26, 115, 232, 0.3);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+
+    .modal-card textarea {
+      width: 100%;
+      min-height: 105px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .modal-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .modal-btns button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-modal-cancel { background: #f1f5f9; color: var(--text-main); }
+    .btn-modal-save { background: var(--primary-blue); color: #fff; }
+
+    /* Toast */
+    .toast-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .toast-overlay.show { opacity: 1; }
+
+    .toast-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 22px 18px;
+      max-width: 300px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .toast-check {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .toast-box h3 { font-size: 1rem; margin-bottom: 4px; font-weight: 800; color: var(--dark-blue); }
+    .toast-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <!-- Particle Effect Canvas -->
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="app-container">
+    
+    <!-- Top Dashboard Header -->
+    <header class="dash-header">
+      <div class="brand-avatar">📸</div>
+      <div class="brand-info">
+        <h1>Maa Gitanjali Digital Studio</h1>
+        <p>Madhepura's Premier Photography &amp; Video Experts</p>
+      </div>
+    </header>
+
+    <!-- Stacked Navigation Cards (Up-Down) -->
+    <div class="stack-section">
+      <a href="https://maa-gitanjali-digital.netlify.app/" target="_blank" rel="noopener" class="nav-card">
+        <div class="nav-card-left">
+          <div class="nav-icon icon-web">🌐</div>
+          <div>
+            <div class="nav-title">Our Official Website</div>
+            <div class="nav-subtitle">Explore portfolios &amp; packages</div>
+          </div>
+        </div>
+        <div class="nav-arrow">&rarr;</div>
+      </a>
+
+      <a href="https://www.instagram.com/_maa_gitanjali_studio_?cplk=MXFwOGF0bzd1eXhtaQ==" target="_blank" rel="noopener" class="nav-card">
+        <div class="nav-card-left">
+          <div class="nav-icon icon-insta">📸</div>
+          <div>
+            <div class="nav-title">Our Instagram Gallery</div>
+            <div class="nav-subtitle">Watch recent event reels</div>
+          </div>
+        </div>
+        <div class="nav-arrow">&rarr;</div>
+      </a>
+    </div>
+
+    <!-- Horizontal Review Slider Section -->
+    <div class="slider-header">
+      <span>👉 Slide &amp; Select a Review (50 Options)</span>
+      <span id="selectedIndicator" style="font-size:0.72rem; color:#0284c7; font-weight:700;"></span>
+    </div>
+
+    <div class="horizontal-slider" id="reviewList"></div>
+
+  </div>
+
+  <!-- Bottom Action Dock -->
+  <div class="bottom-dock">
+    <div class="dock-inner">
+      <div class="dock-controls">
+        <div class="star-group">
+          <button type="button" class="star-pill active" onclick="setStars(5, this)">★★★★★ 5 Star</button>
+          <button type="button" class="star-pill" onclick="setStars(3, this)">★★★ 3 Star</button>
+        </div>
+        <button type="button" class="edit-trigger" id="editBtn" onclick="openModal()">✎ Edit Text</button>
+      </div>
+
+      <div class="action-stack">
+        <button type="button" id="googleBtn" class="action-btn btn-google" disabled onclick="executeAction()">
+          <span>🌐 Post on Google Review</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-backdrop" id="editModal">
+    <div class="modal-card">
+      <h4>Customize Your Review</h4>
+      <textarea id="modalTextarea"></textarea>
+      <div class="modal-btns">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+        <button type="button" class="btn-modal-save" onclick="saveModal()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-overlay" id="toastOverlay">
+    <div class="toast-box">
+      <div class="toast-check">✓</div>
+      <h3>Review Copied!</h3>
+      <p id="toastMessage">Opening Google Review... Tap Paste to submit.</p>
+    </div>
+  </div>
+
+  <script>
+    // Particle Animation Script
+    const canvas = document.getElementById("particleCanvas");
+    const ctx = canvas.getContext("2d");
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const particles = [];
+    for (let i = 0; i < 25; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2.5 + 1,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: (Math.random() - 0.5) * 0.4,
+        alpha: Math.random() * 0.5 + 0.2
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(2, 132, 199, ${p.alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Direct Google Review Portal URL
+    const GOOGLE_REVIEW_URL = "https://g.page/r/CWGNifomgZX3EBM/review";
+
+    const reviews = [
+      { id: 1, text: "Best wedding planner in Madhepura because the team provided helpful service and managed the arrangements properly. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 2, text: "Best event planner in Madhepura for the arrangements we received. The team was supportive and coordinated the event well. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 3, text: "We had a good experience with these professional wedding planners in Madhepura. The team listened to our requirements and helped with the arrangements. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 4, text: "We were satisfied with the catering service arranged for our function. The food and service were managed well. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 5, text: "Good event management in Madhepura. The team coordinated the arrangements and helped our function run smoothly. Thanks to Maa Gitanjali Digital Studio." },
+      { id: 6, text: "A helpful team for event management in Madhepura. The arrangements were handled according to our discussion. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 7, text: "One of the best event planners in Madhepura based on our experience. The team was cooperative and managed the event arrangements well. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 8, text: "Good experience with the top event planners in Madhepura. The team supported us throughout. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 9, text: "If you need a Madhepura event planner, you can consider Maa Gitanjali Digital Studio. We appreciated the team's coordination and service." },
+      { id: 10, text: "Good wedding service providers in Madhepura. The team understood our needs and helped arrange the services we selected. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 11, text: "Our experience was good and the event arrangements were completed as discussed. Thank you to Maa Gitanjali Digital Studio for the support." },
+      { id: 12, text: "Good event management in Madhepura with helpful coordination from the team. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 13, text: "We liked the decoration work done for our event. The team paid attention to the setup and our requirements. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 14, text: "Among the wedding planners in Madhepura, Maa Gitanjali Digital Studio gave us a good experience. The team was cooperative and helped with the planning." },
+      { id: 15, text: "Best wedding planner in Madhepura for the services we used. The arrangements were handled with care and the team was helpful." },
+      { id: 16, text: "A reliable event planner in Madhepura based on our experience. The team coordinated the work and helped us with the event. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 17, text: "We were happy with the wedding decoration arranged for our function. The setup matched our requirements. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 18, text: "Good experience with a wedding planner in Madhepura. The team understood our needs and helped us plan the function. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 19, text: "Maa Gitanjali Digital Studio provided the wedding services we discussed and the team was supportive. Thank you for helping with our function." },
+      { id: 20, text: "Good wedding event management in Madhepura. The team coordinated the arrangements and supported us during the function. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 21, text: "We had a positive experience with the wedding planning services. The team communicated with us and helped organize the arrangements. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 22, text: "The wedding decoration services were handled according to our selected setup. We appreciate the team's effort. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 23, text: "We liked the stage decoration arranged for our event. The team understood the design we wanted and worked on the setup. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 24, text: "Good experience with a wedding management company in Madhepura. The team helped coordinate our function and was cooperative." },
+      { id: 25, text: "A helpful marriage planner in Madhepura. The team supported us with planning and the arrangements we booked. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 26, text: "Best wedding planner in Madhepura for our family's function. We appreciated the team's behaviour, planning and support." },
+      { id: 27, text: "Best event planner in Madhepura for the event services we received. The team was helpful and coordinated the work properly. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 28, text: "The professional wedding planners in Madhepura team was polite and responsive. They helped us organize the services we needed." },
+      { id: 29, text: "We had a good experience with event management in Madhepura through Maa Gitanjali Digital Studio. The team helped us manage the arrangements." },
+      { id: 30, text: "Good service from Maa Gitanjali Digital Studio. The team helped us with our wedding arrangements and answered our questions." },
+      { id: 31, text: "The event was managed well and the team was cooperative throughout the arrangements. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 32, text: "The decoration work was neat and suited the function we planned. We appreciate the team's effort. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 33, text: "Good experience with event decorators in Madhepura. The team discussed the setup with us and completed the decoration we booked." },
+      { id: 34, text: "Helpful wedding service providers in Madhepura. We received clear communication and support for the services we selected. Thanks, Maa Gitanjali Digital Studio." },
+      { id: 35, text: "The team was cooperative and helped coordinate our event requirements. Thank you to Maa Gitanjali Digital Studio for the service." },
+      { id: 36, text: "Maa Gitanjali Digital Studio gave us a good experience for our function in Madhepura. The team helped with the arrangements we requested." },
+      { id: 37, text: "The planning process was straightforward and the team helped us understand the arrangements. Thanks to Maa Gitanjali Digital Studio." },
+      { id: 38, text: "The stage setup was completed according to the design we discussed. We appreciate the work and support from the team. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 39, text: "Our event arrangements were coordinated well by the team. Thank you for your support and service through Maa Gitanjali Digital Studio." },
+      { id: 40, text: "We had a good experience with Maa Gitanjali Digital Studio. The team helped us with the wedding arrangements and was supportive. Thank you." },
+      { id: 41, text: "I had a positive experience with this event planner in Madhepura. The team was helpful with the arrangements we booked." },
+      { id: 42, text: "The catering arrangements for our function were handled well. Thank you to Maa Gitanjali Digital Studio for coordinating the service." },
+      { id: 43, text: "The wedding services we booked were arranged as discussed. The team was cooperative and helpful. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 44, text: "The team was professional and helpful during our event planning. We appreciate the service provided by Maa Gitanjali Digital Studio." },
+      { id: 45, text: "We appreciated the team's coordination and support for our function. Thank you, Maa Gitanjali Digital Studio." },
+      { id: 46, text: "The decoration service was organized according to our preferences. Thank you to the team for the support." },
+      { id: 47, text: "Maa Gitanjali Digital Studio helped us with the marriage arrangements we selected. The team was cooperative and easy to communicate with." },
+      { id: 48, text: "Good service and helpful coordination for our event in Madhepura. Thank you, Maa Gitanjali Digital Studio team." },
+      { id: 49, text: "Based on the service we received, Maa Gitanjali Digital Studio was a good choice for our function. Thank you for your support." },
+      { id: 50, text: "We appreciate the event planning support from the team. The arrangements we booked were coordinated well. Thank you, Maa Gitanjali Digital Studio." }
+    ];
+
+    let selectedId = null;
+    let activeText = "";
+    let starRating = 5;
+
+    const listContainer = document.getElementById("reviewList");
+    const editBtn = document.getElementById("editBtn");
+    const googleBtn = document.getElementById("googleBtn");
+    const indicator = document.getElementById("selectedIndicator");
+
+    function renderReviews() {
+      listContainer.innerHTML = "";
+      reviews.forEach((item) => {
+        const isSelected = selectedId === item.id;
+        const card = document.createElement("div");
+        card.className = `review-card ${isSelected ? "selected" : ""}`;
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="rev-num">#${String(item.id).padStart(2, '0')}</span>
+          </div>
+          <p class="review-text">${isSelected ? activeText : item.text}</p>
+        `;
+        card.onclick = () => selectItem(item);
+        listContainer.appendChild(card);
+      });
+    }
+
+    function selectItem(item) {
+      selectedId = item.id;
+      activeText = item.text;
+      editBtn.style.display = "inline-block";
+      googleBtn.disabled = false;
+      indicator.textContent = `✓ Review #${item.id} Selected`;
+      renderReviews();
+    }
+
+    function setStars(count, btn) {
+      starRating = count;
+      document.querySelectorAll(".star-pill").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function openModal() {
+      if (!selectedId) return;
+      document.getElementById("modalTextarea").value = activeText;
+      document.getElementById("editModal").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("editModal").classList.remove("open");
+    }
+
+    function saveModal() {
+      const val = document.getElementById("modalTextarea").value.trim();
+      if (val) {
+        activeText = val;
+        renderReviews();
+      }
+      closeModal();
+    }
+
+    function executeAction() {
+      if (!activeText) return;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(activeText).catch(() => fallback(activeText));
+      } else {
+        fallback(activeText);
+      }
+
+      const toast = document.getElementById("toastOverlay");
+      const msg = document.getElementById("toastMessage");
+      msg.textContent = `Opening Google Review... Select ${starRating} Stars and Paste your review.`;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        window.location.href = GOOGLE_REVIEW_URL;
+      }, 1050);
+    }
+
+    function fallback(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    renderReviews();
+  </script>
+</body>
+</html>
